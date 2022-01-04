@@ -1,0 +1,12 @@
+app-footer {
+    position: absolute;
+    left: 0;
+    bottom: 0;
+    width: 100%;
+    z-index: 1;
+}
+
+app-page-content {
+    margin-bottom: 50px;
+    z-index: 1000;
+}

@@ -1,0 +1,336 @@
+<!-- Main content -->
+<app-topnav></app-topnav>
+<app-header></app-header>
+<div class="container-fluid mt--6">
+  <!-- Dark table -->
+  <div class="row">
+    <div class="col">
+      <div class="card bg-default shadow">
+        <div class="card-header bg-transparent border-0">
+          <h2 class="text-white mb-0">Danh sách Game</h2>
+        </div>
+        <a (click)="goToCreate()" class="createBtn text-white btn btn-primary">
+          Create a new game
+        </a>
+        <div class="search-hero">
+          <input
+            class="form-control"
+            type="text"
+            name="search"
+            [(ngModel)]="searchText"
+            autocomplete="off"
+            placeholder="&#61442;  Search for something"
+          />
+        </div>
+        <div class="table-responsive">
+          <table
+            matSort
+            (matSortChange)="sortData($event)"
+            class="table align-items-center table-dark table-flush"
+          >
+            <thead class="thead-dark">
+              <tr>
+                <th scope="col" class="sort">Game</th>
+                <th mat-sort-header="price" scope="col" class="sort">Price</th>
+                <th mat-sort-header="quantity" scope="col" class="sort">
+                  In Stock
+                </th>
+                <th scope="col" class="sort" data-sort="type">Type</th>
+                <th scope="col"></th>
+              </tr>
+            </thead>
+            <tbody class="list">
+              <tr
+                id="tableRow"
+                *ngFor="
+                  let item of sortedData | paginate: config | filter: searchText
+                "
+              >
+                <th scope="row">
+                  <div class="media align-items-center">
+                    <a href="#" class="avatar rounded-circle mr-3">
+                      <img
+                        class="tableAvatar"
+                        alt="Image placeholder"
+                        src="{{ item.imgLink }}"
+                      />
+                    </a>
+                    <div class="media-body">
+                      <span class="name mb-0 text-sm">{{ item.gameName }}</span>
+                    </div>
+                  </div>
+                </th>
+                <td class="gamePrice">${{ item.price }}</td>
+                <td>
+                  <span class="badge badge-dot mr-4">
+                    <i class="bg-success"></i>
+                    <span class="gameStock">{{ item.quantity }}</span>
+                  </span>
+                </td>
+                <td>
+                  <span class="badge badge-dot mr-4">
+                    <i class="bg-warning"></i>
+                    <span class="gameStype">{{ item.type }}</span>
+                  </span>
+                </td>
+
+                <td class="tableAction">
+                  <button
+                    id="{{ item.id }}"
+                    type="button"
+                    class="tableUpdate btn btn-success"
+                    (click)="updateGame($event)"
+                  >
+                    Update
+                  </button>
+                  <button
+                    id="{{ item.id }}"
+                    (click)="deleteGameFromFB($event)"
+                    type="button"
+                    class="tableDelete btn btn-danger"
+                  >
+                    Delete
+                  </button>
+                </td>
+              </tr>
+            </tbody>
+          </table>
+          <pagination-controls
+            class="d-flex justify-content-center"
+            (pageChange)="pageChanged($event)"
+          ></pagination-controls>
+        </div>
+      </div>
+    </div>
+  </div>
+  <div id="formCreate" class="tableForm wrapper">
+    <div>
+      <form id="editForm" [formGroup]="editForm">
+        <label
+          ><b>Game name <span style="color: red">*</span></b></label
+        ><br />
+        <div class="input__div">
+          <input
+            formControlName="GameName"
+            class="input1 mb-2"
+            type="text"
+            placeholder="Enter the name of the game"
+          />
+        </div>
+        <div
+          class="error"
+          *ngIf="
+            !editForm.controls.GameName.valid &&
+            editForm.controls.GameName.touched
+          "
+        >
+          Please enter game name
+        </div>
+        <label
+          ><b>Price <span style="color: red">*</span></b></label
+        ><br />
+        <div class="input__div">
+          <input
+            formControlName="Price"
+            class="input2 mb-2"
+            type="text"
+            placeholder="Enter the price of the game"
+          />
+        </div>
+        <div
+          class="error"
+          *ngIf="
+            !editForm.controls.Price.valid && editForm.controls.Price.touched
+          "
+        >
+          Please enter the price approriately
+        </div>
+        <label
+          ><b>Image Link <span style="color: red">*</span></b></label
+        ><br />
+        <div class="input__div">
+          <input
+            formControlName="ImageLink"
+            class="input3 mb-2"
+            type="text"
+            placeholder="Enter the link of the image"
+          />
+        </div>
+        <div
+          class="error"
+          *ngIf="
+            !editForm.controls.ImageLink.valid &&
+            editForm.controls.ImageLink.touched
+          "
+        >
+          Please enter the link approriately
+        </div>
+        <label
+          ><b>Product quantity <span style="color: red">*</span></b></label
+        ><br />
+        <div class="input__div">
+          <input
+            formControlName="quantity"
+            class="input4 mb-2"
+            type="text"
+            placeholder="Enter the amount of the products"
+          />
+        </div>
+        <div
+          class="error"
+          *ngIf="
+            !editForm.controls.quantity.valid &&
+            editForm.controls.quantity.touched
+          "
+        >
+          Please enter the quantity approriately
+        </div>
+        <label style="color: white"
+          ><p class="message">
+            <b>Type*</b>
+          </p></label
+        >
+        <div>
+          <textarea
+            formControlName="Type"
+            name="message"
+            id=""
+            cols="30"
+            rows="3"
+            required
+          ></textarea>
+          <div
+            class="error"
+            *ngIf="
+              !editForm.controls.Type.valid && editForm.controls.Type.touched
+            "
+          >
+            Please describe the type approriately
+          </div>
+        </div>
+
+        <br />
+        <br />
+        <button class="bai6__button" (click)="addNewGameToDB()" type="submit">
+          Submit
+        </button>
+      </form>
+    </div>
+  </div>
+  <div id="formUpdate" class="tableForm wrapper">
+    <div>
+      <form id="updateForm" [formGroup]="updateForm">
+        <label
+          ><b>Game name <span style="color: red">*</span></b></label
+        ><br />
+        <div class="input__div">
+          <input
+            formControlName="GameName"
+            class="input1 mb-2"
+            type="text"
+            placeholder="Enter the name of the game"
+          />
+        </div>
+        <div
+          class="error"
+          *ngIf="
+            !updateForm.controls.GameName.valid &&
+            updateForm.controls.GameName.touched
+          "
+        >
+          Please enter game name
+        </div>
+        <label
+          ><b>Price <span style="color: red">*</span></b></label
+        ><br />
+        <div class="input__div">
+          <input
+            formControlName="Price"
+            class="input2 mb-2"
+            type="text"
+            placeholder="Enter the price of the game"
+          />
+        </div>
+        <div
+          class="error"
+          *ngIf="
+            !updateForm.controls.Price.valid &&
+            updateForm.controls.Price.touched
+          "
+        >
+          Please enter the price approriately
+        </div>
+        <label
+          ><b>Image Link <span style="color: red">*</span></b></label
+        ><br />
+        <div class="input__div">
+          <input
+            formControlName="ImageLink"
+            class="input3 mb-2"
+            type="text"
+            placeholder="Enter the link of the image"
+          />
+        </div>
+        <div
+          class="error"
+          *ngIf="
+            !updateForm.controls.ImageLink.valid &&
+            updateForm.controls.ImageLink.touched
+          "
+        >
+          Please enter the link approriately
+        </div>
+        <label
+          ><b>Product quantity <span style="color: red">*</span></b></label
+        ><br />
+        <div class="input__div">
+          <input
+            formControlName="quantity"
+            class="input4 mb-2"
+            type="text"
+            placeholder="Enter the amount of the products"
+          />
+        </div>
+        <div
+          class="error"
+          *ngIf="
+            !updateForm.controls.quantity.valid &&
+            updateForm.controls.quantity.touched
+          "
+        >
+          Please enter the quantity approriately
+        </div>
+        <label style="color: white"
+          ><p class="message">
+            <b>Type*</b>
+          </p></label
+        >
+        <div>
+          <textarea
+            formControlName="Type"
+            name="message"
+            id=""
+            cols="30"
+            rows="3"
+            required
+          ></textarea>
+          <div
+            class="error"
+            *ngIf="
+              !updateForm.controls.Type.valid && editForm.controls.Type.touched
+            "
+          >
+            Please describe the type approriately
+          </div>
+        </div>
+
+        <br />
+        <br />
+        <button class="bai6__button" (click)="submitNewGame()" type="submit">
+          Submit
+        </button>
+      </form>
+    </div>
+  </div>
+</div>
+<app-footer></app-footer>
